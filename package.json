@@ -1,0 +1,28 @@
+{
+  "name": "cse340-course-repo-v02",
+  "version": "1.0.0",
+  "description": "CSE 340: Web Backend Development course repository, BYU-I",
+  "homepage": "https://github.com/IsaiasPalaco/cse340-course-repo-v02#readme",
+  "bugs": {
+    "url": "https://github.com/IsaiasPalaco/cse340-course-repo-v02/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/IsaiasPalaco/cse340-course-repo-v02.git"
+  },
+  "license": "ISC",
+  "author": "Isaias Palaco",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "dev": "nodemon",
+    "start": "node server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
+}
