@@ -15,7 +15,10 @@ Sempre que for estruturar o arquivo principal do servidor (ex: `server.js` ou `a
 
 ## ⚡ Install Nodemon for Development
 
-1. Install nodemon as a development dependency by running the following command in your terminal: npm install --save-dev nodemon . (The save-dev flag adds this to a list of dependencies for development only, because it will not be needed in the production environment.)
+1. Install nodemon as a development dependency by running the following command in your terminal: 
+* npm install --save-dev nodemon
+
+(The save-dev flag adds this to a list of dependencies for development only, because it will not be needed in the production environment.)
 
 2. Create a new file nodemon.json and copy the following configuration settings into this file to tell node the starring command to execute and which file extensions should trigger an update:
 {
@@ -107,3 +110,110 @@ app.get('/projects', async (req, res) => {
     const title = 'Service Projects';
     res.render('projects', { title });
 });
+
+# CREATE AND CONNECT DATABASE
+1. Create database (PostgreSQL)
+
+2. Connect database from NodeJS
+Install the pg library, which is a PostgreSQL client for Node.js. You can do this by running the following command in your project directory:
+
+* npm install pg
+
+3. Update the .env file in the root of your project to securely store your database connection information. Add the following lines to the file:
+
+DB_URL=...
+ENABLE_SQL_LOGGING=true
+
+Make sure to replace the ... with your actual database details from the External Database URL you found earlier on the Render.com dashboard.
+
+**SQL Debugging**
+At some point in the future (certainly before you had active users on your website), you would change the value of your ENABLE_SQL_LOGGING environment variable to be false at Render, so that your application runs much more efficiently. However, at this point, the logging will be helpful as you track down bugs.
+
+4. Create the Database Connection File
+This section helps you create a file that will handle the connection to the database. It uses a connection pool approach to make the connection process as efficient as possible.
+
+**Connection Pooling**
+Creating a new database connection for every query would be extremely inefficient. Database connections require network handshakes, authentication, and resource allocation, which takes time and server resources. Connection pooling solves this by maintaining a set of reusable connections that can be shared across multiple requests.
+
+When your application needs to run a query, it borrows a connection from the pool, executes the query, and returns the connection to the pool for reuse. This dramatically improves performance and reduces the load on your database server.
+
+`In your src directory, create a new subdirectory named models. Then create a new file named db.js in the src/models/ directory of your project. This file will handle the database connection logic.`
+
+Copy and paste the following code snippet into db.js:
+
+`import { Pool } from 'pg';`
+
+const pool = new Pool({
+    connectionString: process.env.DB_URL,
+    ssl: true
+});
+
+let db = null;
+
+if (process.env.NODE_ENV === 'development' && process.env.ENABLE_SQL_LOGGING === 'true') {
+    db = {
+        async query(text, params) {
+            try {
+                const start = Date.now();
+                const res = await pool.query(text, params);
+                const duration = Date.now() - start;
+                console.log('Executed query:', { 
+                    text: text.replace(/\s+/g, ' ').trim(), 
+                    duration: `${duration}ms`, 
+                    rows: res.rowCount 
+                });
+                return res;
+            } catch (error) {
+                console.error('Error in query:', { 
+                    text: text.replace(/\s+/g, ' ').trim(), 
+                    error: error.message 
+                });
+                throw error;
+            }
+        },
+
+        async close() {
+            await pool.end();
+        }
+    };
+} else {
+    // In production, export the pool directly without logging overhead
+    db = pool;
+}
+
+const testConnection = async() => {
+    try {
+        const result = await db.query('SELECT NOW() as current_time');
+        console.log('Database connection successful:', result.rows[0].current_time);
+        return true;
+    } catch (error) {
+        console.error('Database connection failed:', error.message);
+        throw error;
+    }
+};
+
+`export { db as default, testConnection };`
+
+## Update the Main Server File to Test the Connection
+Now that you have created the database connection and setup files, you need to update your main server file (server.js) to test the database connection when the server starts.
+
+1. Open the server.js file in the root of your project.
+After your other import statements at the top of the server.js file, add the following code to import the testConnection function from the db.js file:
+`import { testConnection } from './src/models/db.js';`
+
+2. Update the server startup code to call the testConnection function. Modify the app.listen section to look like this:
+app.listen(PORT, async () => {
+  try {
+    await testConnection();
+    console.log(`Server is running at http://127.0.0.1:${PORT}`);
+    console.log(`Environment: ${NODE_ENV}`);
+  } catch (error) {
+    console.error('Error connecting to the database:', error);
+  }
+});
+
+# Displaying Database results in EJS
+* Create a model file for Organizations
+
+1. Create a new file src/models/organizations.js .
+Add a function to query the database and get all the organizations, by adding the following code to the src/models/organizations.js file.

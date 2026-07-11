@@ -3,6 +3,12 @@ import express from 'express';
 // 1.1. Também importamos os módulos 'fileURLToPath' e 'path', que nos permitem trabalhar com caminhos de arquivos e diretórios de forma mais fácil e segura.
 import {fileURLToPath} from 'url';
 import path from 'path';
+// 1.2. Por fim, importamos a função 'testConnection' do arquivo 'db.js', que será utilizada para testar a conexão com o banco de dados.
+import { testConnection } from './src/models/db.js';
+// 1.3. Importamos a função 'getAllOrganizations' do arquivo 'organizations.js', que será utilizada para buscar todas as organizações cadastradas no banco de dados.
+import { getAllOrganizations } from './src/models/organizations.js';
+
+
 
 
 // 2. Em seguida, definimos a porta em que o servidor irá escutar as requisições. Caso a variável de ambiente PORT esteja definida, ela será utilizada; caso contrário, o servidor irá escutar na porta 3000. Também definimos o ambiente de execução (NODE_ENV), que pode ser 'development', 'production' ou outro valor definido na variável de ambiente.
@@ -36,8 +42,10 @@ app.get('/', async (req, res) => {
 });
 // 4.2. As rotas '/organizations' e '/projects' são definidas para responder a requisições GET, enviando os arquivos 'organizations.html' e 'projects.html', respectivamente, presentes no diretório 'src/views'. Isso significa que quando o usuário acessar essas URLs, ele verá as páginas correspondentes.
 app.get('/organizations', async (req, res) => {
-    const title = "Our Partner Organizations";
-    res.render("organizations", { title });
+    const organizations = await getAllOrganizations();
+    const title = 'Our Partner Organizations';
+
+    res.render('organizations', { title, organizations });
 });
 
 app.get('/projects', async (req, res) => {
@@ -54,7 +62,12 @@ app.get('/categories', async (req, res) => {
 
 
 // 5. Por fim, iniciamos o servidor, fazendo com que ele escute as requisições na porta definida anteriormente (3000). Quando o servidor estiver pronto para receber requisições, ele irá imprimir uma mensagem no console informando a URL de acesso e o ambiente de execução.
-app.listen (PORT, () => {
+app.listen(PORT, async () => {
+  try {
+    await testConnection();
     console.log(`Server is running at http://127.0.0.1:${PORT}`);
     console.log(`Environment: ${NODE_ENV}`);
+  } catch (error) {
+    console.error('Error connecting to the database:', error);
+  }
 });
