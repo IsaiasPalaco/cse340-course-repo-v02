@@ -2,14 +2,19 @@
 
 <main>
     <h1><%= title %></h1>
-
-    <ul class="categories-list">
-            <li>Environmental</li>
-            <li>Educational</li>
-            <li>Community Service</li>
-            <li>Health and Wellness</li>
-        </ul>
-
+    <p>Explore the available types of community service projects:</p>
+    
+    <ul>
+        <% if (typeof categories !== 'undefined' && categories.length > 0) { %>
+            <% categories.forEach(category => { %>
+                <li>
+                    <strong><%= category.name %></strong>
+                </li>
+            <% }) %>
+        <% } else { %>
+            <p>No categories found.</p>
+        <% } %>
+    </ul>
 </main>
 
 <%- include('partials/footer') %>

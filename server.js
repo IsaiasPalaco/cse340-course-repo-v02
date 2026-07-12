@@ -7,6 +7,8 @@ import path from 'path';
 import { testConnection } from './src/models/db.js';
 // 1.3. Importamos a função 'getAllOrganizations' do arquivo 'organizations.js', que será utilizada para buscar todas as organizações cadastradas no banco de dados.
 import { getAllOrganizations } from './src/models/organizations.js';
+import { getAllProjects } from './src/models/projects.js';
+import { getAllCategories } from './src/models/categories.js';
 
 
 
@@ -48,14 +50,38 @@ app.get('/organizations', async (req, res) => {
     res.render('organizations', { title, organizations });
 });
 
+// 4.3. Rota de Projetos (Atualizada para enviar os dados para a View)
 app.get('/projects', async (req, res) => {
-    const title = "Service Projects";
-    res.render("projects", { title });
+    try {
+        // 1. Busca os projetos do banco (com os nomes das organizações inclusos via JOIN)
+        const projects = await getAllProjects();
+        
+        const title = "Service Projects";
+        
+        // 2. Renderiza a view EJS passando o título E o array de projetos
+        res.render("projects", { title, projects });
+    } catch (error) {
+        console.error("Error in /projects route:", error);
+        res.status(500).send("Internal Server Error");
+    }
 });
 
+// 4.4. Rota de Categorias (Atualizada para fluxo de dados dinâmicos)
 app.get('/categories', async (req, res) => {
-    const title = "Service Categories";
-    res.render("categories", { title });
+    try {
+        // 1. Coleta os dados brutos do banco de dados através do Model
+        const categories = await getAllCategories();
+        
+        // Opcional para debug local: console.log("CATEGORIES:", categories);
+        
+        const title = "Service Categories";
+        
+        // 2. Renderiza a view EJS injetando as variáveis dinâmicas
+        res.render("categories", { title, categories });
+    } catch (error) {
+        console.error("Error in /categories route:", error);
+        res.status(500).send("Internal Server Error");
+    }
 });
 
 

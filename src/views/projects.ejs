@@ -2,14 +2,29 @@
 
 <main>
     <h1><%= title %></h1>
-
-    <h2>Upcoming Service Projects</h2>
+    <p>Browse our current community service opportunities:</p>
+    
     <ul>
-        <li>Park Cleanup - Join us to clean up local parks and make them beautiful!</li>
-        <li>Food Drive - Help collect and distribute food to those in need.</li>
-        <li>Community Tutoring - Volunteer to tutor students in various subjects.</li>
+        <% if (typeof projects !== 'undefined' && projects.length > 0) { %>
+            <% projects.forEach(project => { %>
+                <li>
+                    <% 
+                        // Formata a data vinda do banco de dados (ex: "August 15, 2026")
+                        const friendlyDate = new Date(project.date).toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                        });
+                    %>
+                    <em><%= friendlyDate %>:</em> <%= project.title %> <strong>🟢<%= project.organization_name %></strong>
+                    <p><%= project.description %></p>
+                    <small>📍 Location: <%= project.location %></small>
+                </li>
+            <% }) %>
+        <% } else { %>
+            <p>No service projects found.</p>
+        <% } %>
     </ul>
-
 </main>
 
 <%- include('partials/footer') %>
