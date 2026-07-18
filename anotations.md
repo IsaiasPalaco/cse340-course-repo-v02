@@ -217,3 +217,28 @@ app.listen(PORT, async () => {
 
 1. Create a new file src/models/organizations.js .
 Add a function to query the database and get all the organizations, by adding the following code to the src/models/organizations.js file.
+
+# MIDLEWARES
+
+1. In this step, you will add a middleware function that will log every request to your application. This will help you understand how middleware processes every request that comes to your server.
+
+In your server.js file, add the following code to come after the code that sets the view engine and the views directory, but directly before your route definitions.
+
+// Middleware to log all incoming requests
+app.use((req, res, next) => {
+    if (NODE_ENV === 'development') {
+        console.log(`${req.method} ${req.url}`);
+    }
+    next(); // Pass control to the next middleware or route
+});
+
+2. Add middleware to make NODE_ENV available
+In this step, you will create another middleware function to make the environment variable NODE_ENV available to all your templates. This will be helpful in the future, when you create an error page and want to display detailed error information only when NODE_ENV is set to development.
+
+Add the following code directly after your previous middleware function that logs every request.
+
+// Middleware to make NODE_ENV available to all templates
+app.use((req, res, next) => {
+    res.locals.NODE_ENV = NODE_ENV;
+    next();
+});

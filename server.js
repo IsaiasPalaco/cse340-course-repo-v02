@@ -35,6 +35,20 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'src/views'));
 
+// 3.3. Middleware para logar as requisições no console, apenas em ambiente de desenvolvimento. Isso é útil para depuração e monitoramento das requisições recebidas pelo servidor.
+app.use((req, res, next) => {
+    if (NODE_ENV === 'development') {
+        console.log(`${req.method} ${req.url}`);
+    }
+    next();
+});
+
+// Middleware para adicionar a variável de ambiente NODE_ENV aos locals do Express, permitindo que ela seja acessada nas views EJS. Isso é útil para exibir informações específicas do ambiente de execução na interface do usuário.
+app.use((req, res, next) => {
+    res.locals.NODE_ENV = NODE_ENV;
+    next();
+});
+
 
 // 4. Definimos as rotas do servidor.
 // 4.1. A rota raiz ('/') é definida para responder a requisições GET, enviando o arquivo 'home.html' presente no diretório 'src/views'. Isso significa que quando o usuário acessar a URL raiz do servidor, ele verá a página inicial do site.
@@ -84,7 +98,40 @@ app.get('/categories', async (req, res) => {
     }
 });
 
+// Test route for 500 errors
+app.get('/test-error', (req, res, next) => {
+    const err = new Error('This is a test error');
+    err.status = 500;
+    next(err);
+});
 
+// 4.5. erro 404 - Página não encontrada. Esse middleware é chamado quando nenhuma das rotas anteriores corresponde à requisição. Ele cria um objeto de erro com a mensagem 'Page Not Found' e o status 404, e passa esse erro para o próximo middleware de tratamento de erros.
+app.use((req, res, next) => {
+    const err = new Error('Page Not Found');
+    err.status = 404;
+    next(err);
+});
+
+// Global error handler
+app.use((err, req, res, next) => {
+    // Log error details for debugging
+    console.error('Error occurred:', err.message);
+    console.error('Stack trace:', err.stack);
+    
+    // Determine status and template
+    const status = err.status || 500;
+    const template = status === 404 ? '404' : '500';
+    
+    // Prepare data for the template
+    const context = {
+        title: status === 404 ? 'Page Not Found' : 'Server Error',
+        error: err.message,
+        stack: err.stack
+    };
+    
+    // Render the appropriate error template
+    res.status(status).render(`errors/${template}`, context);
+});
 
 
 // 5. Por fim, iniciamos o servidor, fazendo com que ele escute as requisições na porta definida anteriormente (3000). Quando o servidor estiver pronto para receber requisições, ele irá imprimir uma mensagem no console informando a URL de acesso e o ambiente de execução.
