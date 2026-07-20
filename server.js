@@ -1,14 +1,14 @@
 // 1. Primeiro importamos o framework Express, que nos permite criar um servidor web de forma simples e rápida.
 import express from 'express';
+
+
 // 1.1. Também importamos os módulos 'fileURLToPath' e 'path', que nos permitem trabalhar com caminhos de arquivos e diretórios de forma mais fácil e segura.
 import {fileURLToPath} from 'url';
 import path from 'path';
 // 1.2. Por fim, importamos a função 'testConnection' do arquivo 'db.js', que será utilizada para testar a conexão com o banco de dados.
 import { testConnection } from './src/models/db.js';
 // 1.3. Importamos a função 'getAllOrganizations' do arquivo 'organizations.js', que será utilizada para buscar todas as organizações cadastradas no banco de dados.
-import { getAllOrganizations } from './src/models/organizations.js';
-import { getAllProjects } from './src/models/projects.js';
-import { getAllCategories } from './src/models/categories.js';
+import router from './src/routes.js';
 
 
 
@@ -51,59 +51,7 @@ app.use((req, res, next) => {
 
 
 // 4. Definimos as rotas do servidor.
-// 4.1. A rota raiz ('/') é definida para responder a requisições GET, enviando o arquivo 'home.html' presente no diretório 'src/views'. Isso significa que quando o usuário acessar a URL raiz do servidor, ele verá a página inicial do site.
-app.get('/', async (req, res) => {
-    const title = "Home";
-    res.render("home", { title });
-});
-// 4.2. As rotas '/organizations' e '/projects' são definidas para responder a requisições GET, enviando os arquivos 'organizations.html' e 'projects.html', respectivamente, presentes no diretório 'src/views'. Isso significa que quando o usuário acessar essas URLs, ele verá as páginas correspondentes.
-app.get('/organizations', async (req, res) => {
-    const organizations = await getAllOrganizations();
-    const title = 'Our Partner Organizations';
-
-    res.render('organizations', { title, organizations });
-});
-
-// 4.3. Rota de Projetos (Atualizada para enviar os dados para a View)
-app.get('/projects', async (req, res) => {
-    try {
-        // 1. Busca os projetos do banco (com os nomes das organizações inclusos via JOIN)
-        const projects = await getAllProjects();
-        
-        const title = "Service Projects";
-        
-        // 2. Renderiza a view EJS passando o título E o array de projetos
-        res.render("projects", { title, projects });
-    } catch (error) {
-        console.error("Error in /projects route:", error);
-        res.status(500).send("Internal Server Error");
-    }
-});
-
-// 4.4. Rota de Categorias (Atualizada para fluxo de dados dinâmicos)
-app.get('/categories', async (req, res) => {
-    try {
-        // 1. Coleta os dados brutos do banco de dados através do Model
-        const categories = await getAllCategories();
-        
-        // Opcional para debug local: console.log("CATEGORIES:", categories);
-        
-        const title = "Service Categories";
-        
-        // 2. Renderiza a view EJS injetando as variáveis dinâmicas
-        res.render("categories", { title, categories });
-    } catch (error) {
-        console.error("Error in /categories route:", error);
-        res.status(500).send("Internal Server Error");
-    }
-});
-
-// Test route for 500 errors
-app.get('/test-error', (req, res, next) => {
-    const err = new Error('This is a test error');
-    err.status = 500;
-    next(err);
-});
+app.use(router);
 
 // 4.5. erro 404 - Página não encontrada. Esse middleware é chamado quando nenhuma das rotas anteriores corresponde à requisição. Ele cria um objeto de erro com a mensagem 'Page Not Found' e o status 404, e passa esse erro para o próximo middleware de tratamento de erros.
 app.use((req, res, next) => {
