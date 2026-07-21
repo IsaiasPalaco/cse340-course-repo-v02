@@ -1,5 +1,4 @@
 <%- include('partials/header') %>
-
 <main>
     <h1><%= title %></h1>
     <p>Explore the available types of community service projects:</p>
@@ -8,7 +7,7 @@
         <% if (typeof categories !== 'undefined' && categories.length > 0) { %>
             <% categories.forEach(category => { %>
                 <li>
-                    <strong><%= category.name %></strong>
+                    <a href="/category/<%= category.category_id %>"><strong><%= category.name %></strong></a>
                 </li>
             <% }) %>
         <% } else { %>
@@ -16,5 +15,4 @@
         <% } %>
     </ul>
 </main>
-
 <%- include('partials/footer') %>

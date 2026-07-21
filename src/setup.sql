@@ -56,3 +56,48 @@ INSERT INTO category (name) VALUES
 ('Human Services & Community'),
 ('Health & Wellness'),
 ('Disaster Relief');
+
+-- 5. CRIAÇÃO DA TABELA DE RELACIONAMENTO ENTRE PROJETOS E CATEGORIAS
+CREATE TABLE project_category (
+    project_id INTEGER NOT NULL,
+    category_id INTEGER NOT NULL,
+    
+    CONSTRAINT fk_project
+        FOREIGN KEY (project_id)
+        REFERENCES project(project_id)
+        ON DELETE CASCADE,
+    
+    CONSTRAINT fk_category
+        FOREIGN KEY (category_id)
+        REFERENCES category(category_id)
+        ON DELETE CASCADE,
+    
+    PRIMARY KEY (project_id, category_id)
+);
+
+-- 6. INSERÇÃO DE DADOS DE RELACIONAMENTO ENTRE PROJETOS E CATEGORIAS
+INSERT INTO project_category (project_id, category_id) VALUES
+(1, 1),
+(1, 3),
+(2, 2),
+(2, 3),
+(3, 3),
+(3, 5),
+(4, 2),
+(5, 3),
+(5, 5),
+(6, 1),
+(6, 2),
+(7, 1),
+(8, 1),
+(8, 2),
+(9, 1),
+(10, 1),
+(11, 3),
+(11, 4),
+(12, 2),
+(12, 3),
+(13, 4),
+(13, 5),
+(14, 3),
+(15, 3);

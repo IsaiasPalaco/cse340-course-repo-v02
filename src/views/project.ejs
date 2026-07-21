@@ -8,5 +8,12 @@
     <p>Location: <%= project.location %></p>
     <p>Organization: <a href="/organization/<%= project.organization_id %>"><%= project.organization_name %></a></p>
 
+    <% if (categories && categories.length > 0) { %>
+        <div class="category-tags">
+            <% categories.forEach(cat => { %>
+                <a href="/category/<%= cat.category_id %>" class="tag"><%= cat.name %></a>
+            <% }) %>
+        </div>
+    <% } %>
 </main>
 <%- include('partials/footer') %>
