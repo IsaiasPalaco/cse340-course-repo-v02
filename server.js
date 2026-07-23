@@ -28,6 +28,10 @@ const __dirname = path.dirname(__filename);
 // 3. Por fim, criamos uma instância do Express, que será utilizada para configurar as rotas e middlewares do servidor.
 const app = express();
 
+// Allow Express to receive and process common POST data
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+
 
 // 3.1. Aqui configuramos o Express para servir arquivos estáticos a partir do diretório 'public'. Isso significa que qualquer arquivo presente nesse diretório poderá ser acessado diretamente pelo navegador, sem a necessidade de criar uma rota específica para ele.
 app.use(express.static(path.join(__dirname, 'public')));

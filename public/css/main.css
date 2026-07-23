@@ -152,6 +152,59 @@ main ul li strong {
     margin-bottom: 0.25rem;
 }
 
+button {
+    background-color: var(--text-color);
+    color: var(--white);
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: var(--transition-fast);
+    margin-top: 1rem;
+}
+
+a {
+    color: var(--white);
+    text-decoration: none;
+}
+
+button:hover {
+    background-color: #17b014df;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+label {
+    display: block;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 5px;
+    max-width: 400px;
+}
+
+.form-group label,
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.form-group input,
+.form-group textarea {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
 /* ==========================================================================
    5. RODAPÉ (FOOTER PARTIAL)
    ========================================================================== */
