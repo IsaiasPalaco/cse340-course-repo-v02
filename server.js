@@ -1,5 +1,7 @@
 // 1. Primeiro importamos o framework Express, que nos permite criar um servidor web de forma simples e rápida.
 import express from 'express';
+// 1.1. Também importamos o módulo 'express-session', que nos permite gerenciar sessões de usuário no servidor.
+import session from 'express-session';
 
 
 // 1.1. Também importamos os módulos 'fileURLToPath' e 'path', que nos permitem trabalhar com caminhos de arquivos e diretórios de forma mais fácil e segura.
@@ -9,6 +11,8 @@ import path from 'path';
 import { testConnection } from './src/models/db.js';
 // 1.3. Importamos a função 'getAllOrganizations' do arquivo 'organizations.js', que será utilizada para buscar todas as organizações cadastradas no banco de dados.
 import router from './src/routes.js';
+import flash from './src/middleware/flash.js';
+
 
 
 
@@ -16,6 +20,7 @@ import router from './src/routes.js';
 // 2. Em seguida, definimos a porta em que o servidor irá escutar as requisições. Caso a variável de ambiente PORT esteja definida, ela será utilizada; caso contrário, o servidor irá escutar na porta 3000. Também definimos o ambiente de execução (NODE_ENV), que pode ser 'development', 'production' ou outro valor definido na variável de ambiente.
 const NODE_ENV = process.env.NODE_ENV?.toLowerCase() || 'production';
 const PORT = process.env.PORT || 3000;
+const SESSION_SECRET = process.env.SESSION_SECRET; // Variável de ambiente para a chave secreta da sessão, utilizada para assinar o cookie de sessão e garantir a integridade dos dados armazenados na sessão.
 
 
 // 2.1 Em seguida, definimos as variáveis __filename e __dirname, que armazenam o caminho completo do arquivo atual e o diretório em que ele se encontra, respectivamente. Essas variáveis são úteis para trabalhar com caminhos relativos de arquivos e diretórios.
@@ -38,6 +43,18 @@ app.use(express.static(path.join(__dirname, 'public')));
 // 3.2. Configuramos o Express para utilizar o EJS como motor de visualização (view engine). Isso significa que podemos criar arquivos de template com a extensão '.ejs' e renderizá-los dinamicamente no servidor, permitindo a criação de páginas web mais complexas e interativas.
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'src/views'));
+
+
+// 3.2. Configuramos o Express para utilizar o middleware 'express-session', que nos permite gerenciar sessões de usuário no servidor. A sessão é armazenada em um cookie no navegador do usuário, e os dados da sessão são armazenados no servidor. A chave secreta da sessão é definida pela variável de ambiente SESSION_SECRET, garantindo a integridade dos dados armazenados na sessão. O tempo de expiração da sessão é definido para 1 hora de inatividade.
+app.use(session({
+    secret: SESSION_SECRET,
+    resave: false,
+    saveUninitialized: true,
+    cookie: { maxAge: 60 * 60 * 1000 } // 1 hora de expiração da sessão
+}));
+
+// Use flash message middleware
+app.use(flash);
 
 // 3.3. Middleware para logar as requisições no console, apenas em ambiente de desenvolvimento. Isso é útil para depuração e monitoramento das requisições recebidas pelo servidor.
 app.use((req, res, next) => {
