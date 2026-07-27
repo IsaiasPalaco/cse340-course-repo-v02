@@ -178,7 +178,7 @@ button:hover {
 }
 
 
-form {
+form{
     display: flex;
     flex-direction: column;
     gap: 1rem;
@@ -209,6 +209,19 @@ label {
     padding: 8px;
     border: 1px solid #ccc;
     border-radius: 4px;
+}
+
+.form-group div {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: flex-start;
+    margin-bottom: 8px;
+}
+
+.form-group input[type="checkbox"] {
+    width: auto;
+    margin: 0;
 }
 
 /* Flash message styles */

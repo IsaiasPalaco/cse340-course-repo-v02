@@ -8,6 +8,7 @@ import {
     processNewProjectForm,
     projectValidation
 } from './controllers/projects.js';
+
 import {
     showOrganizationsPage,
     showOrganizationDetailsPage,
@@ -17,7 +18,14 @@ import {
     processEditOrganizationForm,
     organizationValidation
 } from './controllers/organizations.js';
-import { showCategoriesPage, showCategoryDetailsPage } from './controllers/categories.js';
+
+import {
+    showCategoriesPage,
+    showCategoryDetailsPage,
+    showAssignCategoriesForm,
+    processAssignCategoriesForm
+} from './controllers/categories.js';
+
 import { testErrorPage } from './controllers/errors.js';
 
 const router = express.Router();
@@ -38,6 +46,8 @@ router.get('/project/:id', showProjectDetailsPage);
 
 router.get('/categories', showCategoriesPage);
 router.get('/category/:id', showCategoryDetailsPage);
+router.get('/assign-categories/:projectId', showAssignCategoriesForm);
+router.post('/assign-categories/:projectId', processAssignCategoriesForm);
 
 router.get('/test-error', testErrorPage);
 
