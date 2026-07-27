@@ -4,6 +4,7 @@
 
     <% if (category) { %>
         <h2><%= category.name %></h2>
+        <strong><p><a href="/edit-category/<%= category.category_id %>">Edit Category</a></p></strong>
         <h3>Service Projects in this Category</h3>
         <ul>
             <% if (projects.length > 0) { %>
